@@ -61,6 +61,13 @@ app.put("/blogs/posts/:id",(req,res) => {
       if (err) return res.status(500).send(err);
       return res.send(data);
     });
+});
+
+app.delete('/blogs/comments/:identifier',(req,res)=> {
+    Comment.findOneAndDelete(({identifier: req.params.identifier}), (err,comment)=> {
+      if (err) res.status(500).send(err);
+      else res.status(200).send({message: 'Comment has been deleted'});
+    })
 })
 
 app.listen(3001, () => {

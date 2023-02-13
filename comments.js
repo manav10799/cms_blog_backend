@@ -6,7 +6,9 @@ const CommentSchema = new Schema({
       comments: {type: String},
       author: {type: String},
       date: {type: Date},
-      profileImage: {type: String}
+      profileImage: {type: String},
+      email: {type: String},
+      identifier: {type: String}
 });
 
 module.exports = mongoose.model('Comment', CommentSchema);
