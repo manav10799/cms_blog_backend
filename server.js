@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require('http')
 const server = http.createServer(app);
-const io = require("socket.io");
+const io = require("socket.io")(server);
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
