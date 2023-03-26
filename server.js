@@ -9,9 +9,8 @@ const http = require('http')
 const server = http.createServer(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: ["http://localhost:4200","https://cms-blog-self.vercel.app"],
+    origin: "https://cms-blog-self.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["my-custom-header"],
     credentials: true
   }
 });
