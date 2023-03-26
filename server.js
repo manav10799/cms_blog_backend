@@ -7,17 +7,15 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require('http')
 const server = http.createServer(app);
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: ["http://localhost:4200","https://cms-blog-self.vercel.app"],
+  }
+});
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cors());
-app.use(function(req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', "https://cms-blog-self.vercel.app");
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  next();
-});
 
 // Get Api Calls
 // Data.find method is used to retrieve all data from the MongoDB collection and return it as the response to the GET request
