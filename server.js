@@ -13,9 +13,20 @@ const io = require("socket.io")(server, {
   }
 });
 
+const corsOpts = {
+  origin: '*',
+  methods: [
+    'GET',
+    'POST',
+  ],
+  allowedHeaders: [
+    'Content-Type',
+  ],
+};
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors(corsOpts));
 
 // Get Api Calls
 // Data.find method is used to retrieve all data from the MongoDB collection and return it as the response to the GET request
