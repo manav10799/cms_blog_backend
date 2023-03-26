@@ -5,6 +5,13 @@ const Comment = require('./comments');
 const db = require('./db');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const http = require('http')
+const server = http.createServer(app);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: ["http://localhost:4200","https://cms-blog-self.vercel.app"],
+  }
+});
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -17,6 +24,13 @@ app.get('/blogs/posts', (req, res) => {
     if (err) return res.status(400).send(err);
     res.status(200).send(posts);
   }); 
+});
+
+io.on('connection', (socket) => {
+  console.log(socket.id);
+  socket.on('connection', (data) => {
+    io.emit('connection',data);
+  });
 });
 
 app.get("/blogs/posts/:id", (req, res) => {
@@ -70,7 +84,7 @@ app.delete('/blogs/comments/:identifier',(req,res)=> {
     })
 })
 
-app.listen(3001, () => {
+server.listen(3001, () => {
   console.log("Initializing Backend for cms blog");
 });
 
