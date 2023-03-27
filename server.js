@@ -11,7 +11,7 @@ const io = require("socket.io")(server, {
   cors: {
     origin: "https://cms-blog-self.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
+    credentials: true
   }
 });
 
