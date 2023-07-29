@@ -7,41 +7,41 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require('http')
 const server = http.createServer(app);
-const io = require("socket.io")(server, {
-  cors: {
-    origin: "https://cms-blog-self.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
-  }
-});
+// const io = require("socket.io")(server, {
+//   cors: {
+//     origin: "https://cms-blog-self.vercel.app",
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true
+//   }
+// });
 
-const allowCors = fn => async (req, res) => {
-  res.setHeader('Access-Control-Allow-Credentials', true)
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  // another common pattern
-  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  )
-  if (req.method === 'OPTIONS') {
-    res.status(200).end()
-    return
-  }
-  return await fn(req, res)
-}
+// const allowCors = fn => async (req, res) => {
+//   res.setHeader('Access-Control-Allow-Credentials', true)
+//   res.setHeader('Access-Control-Allow-Origin', '*')
+//   // another common pattern
+//   // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+//   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
+//   res.setHeader(
+//     'Access-Control-Allow-Headers',
+//     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+//   )
+//   if (req.method === 'OPTIONS') {
+//     res.status(200).end()
+//     return
+//   }
+//   return await fn(req, res)
+// }
 
 const handler = (req, res) => {
   const d = new Date()
   res.end(d.toString())
 }
 
-module.exports = allowCors(handler)
+// module.exports = allowCors(handler)
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use(cors());
+// app.use(cors());
 
 // Get Api Calls
 // Data.find method is used to retrieve all data from the MongoDB collection and return it as the response to the GET request
@@ -52,12 +52,12 @@ app.get('/blogs/posts', (req, res) => {
   }); 
 });
 
-io.on('connection', (socket) => {
-  console.log(socket.id);
-  socket.on('connection', (data) => {
-    io.emit('connection',data);
-  });
-});
+// io.on('connection', (socket) => {
+//   console.log(socket.id);
+//   socket.on('connection', (data) => {
+//     io.emit('connection',data);
+//   });
+// });
 
 app.get("/blogs/posts/:id", (req, res) => {
   Post.find(({id: req.params.id}), (err, post) => {
