@@ -4,7 +4,6 @@ const Post = require('./posts');
 const Comment = require('./comments');
 const db = require('./db');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const http = require('http')
 const server = http.createServer(app);
 // const io = require("socket.io")(server, {
