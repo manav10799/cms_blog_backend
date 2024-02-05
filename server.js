@@ -2,45 +2,24 @@ const express = require("express");
 const app = express();
 const Post = require('./posts');
 const Comment = require('./comments');
+const Reminder = require('./reminder');
 const db = require('./db');
 const bodyParser = require('body-parser');
 const http = require('http')
 const server = http.createServer(app);
-// const io = require("socket.io")(server, {
-//   cors: {
-//     origin: "https://cms-blog-self.vercel.app",
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     credentials: true
-//   }
-// });
+const cors = require('cors');
+const cron = require('node-cron');
+const moment = require('moment-timezone');
+const fileUpload = require('./file-upload');
 
-// const allowCors = fn => async (req, res) => {
-//   res.setHeader('Access-Control-Allow-Credentials', true)
-//   res.setHeader('Access-Control-Allow-Origin', '*')
-//   // another common pattern
-//   // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-//   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
-//   res.setHeader(
-//     'Access-Control-Allow-Headers',
-//     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-//   )
-//   if (req.method === 'OPTIONS') {
-//     res.status(200).end()
-//     return
-//   }
-//   return await fn(req, res)
-// }
-
-const handler = (req, res) => {
-  const d = new Date()
-  res.end(d.toString())
-}
-
-// module.exports = allowCors(handler)
+app.use(cors());
+moment.tz.setDefault('Asia/Kolkata');
+const currentTimeInIndia = moment();
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 // app.use(cors());
+app.use('/upload',fileUpload);
 
 // Get Api Calls
 // Data.find method is used to retrieve all data from the MongoDB collection and return it as the response to the GET request
@@ -50,13 +29,6 @@ app.get('/blogs/posts', (req, res) => {
     res.status(200).send(posts);
   }); 
 });
-
-// io.on('connection', (socket) => {
-//   console.log(socket.id);
-//   socket.on('connection', (data) => {
-//     io.emit('connection',data);
-//   });
-// });
 
 app.get("/blogs/posts/:id", (req, res) => {
   Post.find(({id: req.params.id}), (err, post) => {
@@ -108,6 +80,47 @@ app.delete('/blogs/comments/:identifier',(req,res)=> {
       else res.status(200).send({message: 'Comment has been deleted'});
     })
 })
+
+// Api End Point to create a reminder with scheduled time
+
+app.post('/blogs/reminders',async (req,res)=> {
+  try {
+    const { title, message, scheduledTime } = req.body;
+
+    const reminder = new Reminder({title, message, scheduledTime});
+    await reminder.save();
+
+    //Scheduling reminder using CRON
+    cron.schedule(scheduledTime,
+    async ()=> {
+      console.log('Scheduling reminder');
+
+      await Reminder.findByIdAndRemove(reminder.id);
+    },
+    {
+      timezone: 'Asia/Kolkata',
+    }
+    );
+    res.status(201).json({message: 'Message Scheduled'});
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json({error: 'Error saving reminder'});
+  }
+});
+
+//Api to get reminder
+
+app.get('/blogs/reminders', async (req, res) => {
+  try {
+    const reminders = await Reminder.find();
+    res.status(200).json(reminders);
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json({error: 'Error'});
+  }
+});
 
 server.listen(3001, () => {
   console.log("Initializing Backend for cms blog");
